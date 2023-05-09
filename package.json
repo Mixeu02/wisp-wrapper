@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/Mixeu02/wisp-wrapper/issues"
   },
-  "homepage": "https://github.com/Mixeu02/wisp-wrapper#readme"
+  "homepage": "https://github.com/Mixeu02/wisp-wrapper#readme",
+  "dependencies": {
+    "events": "^3.3.0"
+  }
 }

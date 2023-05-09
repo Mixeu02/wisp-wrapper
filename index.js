@@ -1,37 +1,57 @@
+const { EventEmitter } = require('events');
 
 // Util
 
 async function getData(url, token) {
-    const tokenHeader = `Authorization: Bearer ${token}`
-
     const response = await fetch(url, {
-      method: "POST",
+      method: "GET",
       mode: "cors",
       cache: "no-cache",
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/vnd.wisp.v1+json",
-        tokenHeader
+        "Authorization": "Bearer " + token
       },
       redirect: "follow", // manual, *follow, error
-      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      body: null, // body data type must match "Content-Type" header
+      referrerPolicy: "no-referrer"
     });
     return response.json(); // parses JSON response into native JavaScript objects
 }
 
-// Classes
+// Main
 
-class panel{
-    constructor(name, token){
-        this.name = name
-        this.token = token
-    }
+const wisp = {
+    Panel: class extends EventEmitter{
+        constructor(){
+          super();
+          this.name = null;
+          this.token = null
+          this.servers = null;
+        }
 
-    async init(){
-        return await getData(`https://${this.name}/api/client/ENDPOINT`, this.token);
+        connect = async (name, token) => {
+          this.name = name;
+          this.token = token;
+
+          // Servers Data
+            const getServersData = async () => {
+                const data = await getData(`https://${this.name}/api/client/servers`, this.token);
+        
+                this.servers = new Map();
+                for (let i = 0; i < data.data.length; i++){
+                    this.servers.set(data.data[i].attributes.uuid, data.data[i].attributes)
+                }
+                this.servers.quantity = data.meta.pagination.total;
+                this.servers.perPage = data.meta.pagination.per_page;
+                this.servers.pageQuantity = data.meta.pagination.total_pages;
+            };
+
+          // Function Call
+          await getServersData();
+          this.emit("ready");
+        }
     }
 }
 
-module.exports = panel;
+module.exports = wisp;
