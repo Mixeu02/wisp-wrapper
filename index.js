@@ -23,18 +23,13 @@ const wisp = {
                   this.servers.set(data.data[i].attributes.uuid_short, data.data[i].attributes)
               }
       
-              // Wait for all async operations to complete
               await Promise.all(
                 Array.from(this.servers, ([_, server]) => server).map(async (server) => {           
                       // ===== [ Change Name ] =====
-                      this.servers.get(server.uuid_short).changeName = async (newName) => {
-                          await patchFetch(`https://${this.name}/api/client/servers/${server.uuid_short}/details`, this.token, { name: newName }, false);
-                      }
+                      this.servers.get(server.uuid_short).changeName = require("./functions/changeName");
       
                       // ===== [ Send Command ] =====
-                      this.servers.get(server.uuid_short).sendCommand = async (command) => {
-                          await postFetch(`https://${this.name}/api/client/servers/${server.uuid_short}/command`, this.token, { command: command }, false);
-                      }
+                      this.servers.get(server.uuid_short).sendCommand = require("./functions/sendCommand");
       
                       // ===== [ Get Audit Logs ] =====
                       const getAuditLogs = require("./functions/getAuditLogs");
@@ -51,7 +46,6 @@ const wisp = {
               this.servers.pageQuantity = data.meta.pagination.total_pages;
           };
       
-          // Function Call
           await getServersData();
           this.emit("ready");
       }
