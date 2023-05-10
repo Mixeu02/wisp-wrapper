@@ -14,7 +14,7 @@ const wispwrapper = require("wisp-wrapper");
 // Creating a new panel
 const panel = new wispwrapper.Panel();
 
-// Trigerred when connection is stabelishd
+// Trigerred when connection is established
 panel.on("ready", () => {
     // All your servers
     const servers = panel.servers;
@@ -32,3 +32,11 @@ panel.on("ready", () => {
 // Replace the "API-TOKEN" with the API TOKEN that you can get from your game panel
 panel.connect("DOMAIN-NAME", "API-TOKEN")
 ```
+
+## Contributing
+
+If you encounter any issue, confusion or a lacking feature, feel free to contribute to our package!
+
+## Support
+
+If you need help understanding something about the package, join our [Discord server](https://discord.gg/6HY4Y8WQF4) to get some support! We will be glad to help you!
