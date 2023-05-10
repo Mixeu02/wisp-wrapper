@@ -1,6 +1,6 @@
 {
   "name": "wisp-wrapper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A library to help you interact with the WIPS API.",
   "main": "index.js",
   "scripts": {
