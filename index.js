@@ -1,59 +1,5 @@
 const { EventEmitter } = require('events');
-
-// Util
-
-async function getFetch(url, token, returnJSON) {
-  const response = await fetch(url, {
-    method: "GET",
-    mode: "cors",
-    cache: "no-cache",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/vnd.wisp.v1+json",
-      "Authorization": "Bearer " + token
-    },
-    redirect: "follow", // manual, *follow, error
-    referrerPolicy: "no-referrer",
-  });
-  return returnJSON ? response.json() : null;
-}
-
-async function postFetch(url, token, params, returnJSON) {
-  const response = await fetch(url, {
-    method: "POST",
-    mode: "cors",
-    cache: "no-cache",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/vnd.wisp.v1+json",
-      "Authorization": "Bearer " + token
-    },
-    redirect: "follow", // manual, *follow, error
-    referrerPolicy: "no-referrer",
-    body: JSON.stringify(params)
-  });
-  return returnJSON ? response.json() : null; // parses JSON response into native JavaScript objects
-}
-
-async function patchFetch(url, token, params, returnJSON) {
-  const response = await fetch(url, {
-    method: "PATCH",
-    mode: "cors",
-    cache: "no-cache",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/vnd.wisp.v1+json",
-      "Authorization": "Bearer " + token,
-    },
-    redirect: "follow", // manual, *follow, error
-    referrerPolicy: "no-referrer",
-    body: JSON.stringify(params)
-  });
-  return returnJSON ? response.json() : null; // parses JSON response into native JavaScript objects
-}
+const { getFetch, postFetch, patchFetch} = require("./util/fetch");
 
 // Main
 
@@ -79,7 +25,7 @@ const wisp = {
       
               // Wait for all async operations to complete
               await Promise.all(
-                Array.from(this.servers, ([_, server]) => server).map(async (server) => {            
+                Array.from(this.servers, ([_, server]) => server).map(async (server) => {           
                       // ===== [ Change Name ] =====
                       this.servers.get(server.uuid_short).changeName = async (newName) => {
                           await patchFetch(`https://${this.name}/api/client/servers/${server.uuid_short}/details`, this.token, { name: newName }, false);
@@ -91,23 +37,12 @@ const wisp = {
                       }
       
                       // ===== [ Get Audit Logs ] =====
-                      const getAuditLogs = async () => {
-                          const auditLogsData = await getFetch(`https://${this.name}/api/client/servers/${server.uuid_short}/audit-logs`, this.token, true);
-                          return {
-                              logs: auditLogsData.data.logs,
-                              quantity: auditLogsData.meta.pagination.total,
-                              perPage: auditLogsData.meta.pagination.per_page,
-                              pageQuantity: auditLogsData.meta.pagination.total_pages
-                          };
+                      const getAuditLogs = require("./functions/getAuditLogs");
+                      const auditLogsData = await getAuditLogs(server, this.name, this.token);
+                      server.auditLogs = new Map();
+                      for (let i = 0; i < auditLogsData.logs.length; i++) {
+                          server.auditLogs.set(auditLogsData.logs[i].attributes.created_at, auditLogsData.logs[i].attributes)
                       }
-      
-                      const auditLogsData = await getAuditLogs();
-                      server.auditLogs = {
-                          logs: auditLogsData.logs,
-                          quantity: auditLogsData.quantity,
-                          perPage: auditLogsData.perPage,
-                          pageQuantity: auditLogsData.pageQuantity
-                      };
                   })
               );
       
