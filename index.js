@@ -1,5 +1,5 @@
 const { EventEmitter } = require('events');
-const { getFetch, postFetch, patchFetch} = require("./util/fetch");
+const { getFetch } = require("./util/fetch");
 
 // Main
 
@@ -56,6 +56,12 @@ const wisp = {
                     server.auditLogs = new Map();
                     for (let i = 0; i < auditLogsData.logs.length; i++) {
                           server.auditLogs.set(auditLogsData.logs[i].attributes.created_at, auditLogsData.logs[i].attributes)
+                    }
+
+                    // ===== [ Create Database ] =====
+                    const createDatabaseFunction = require("./functions/createDatabase");
+                    server.createDatabase = (host, nameDB, connections) => {
+                        createDatabaseFunction(server, this.name, this.token, host, nameDB, connections);
                     }
                 })
             );

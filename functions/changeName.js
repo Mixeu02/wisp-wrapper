@@ -1,4 +1,4 @@
-const { getFetch, postFetch, patchFetch } = require("../util/fetch");
+const { patchFetch } = require("../util/fetch");
 
 const changeName = async (server, name, token, newName) => {
     if (!newName){

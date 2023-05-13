@@ -51,4 +51,22 @@ async function patchFetch(url, token, params, returnJSON) {
     return returnJSON ? response.json() : null; // parses JSON response into native JavaScript objects
 }
 
-module.exports = { getFetch, postFetch, patchFetch };
+async function deleteFetch(url, token, params, returnJSON) {
+  const response = await fetch(url, {
+    method: "DELETE",
+    mode: "cors",
+    cache: "no-cache",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/vnd.wisp.v1+json",
+      "Authorization": "Bearer " + token,
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer",
+    body: JSON.stringify(params)
+  });
+  return returnJSON ? response.json() : null; // parses JSON response into native JavaScript objects
+}
+
+module.exports = { getFetch, postFetch, patchFetch, deleteFetch };

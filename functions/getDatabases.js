@@ -1,4 +1,4 @@
-const { getFetch, postFetch, patchFetch } = require("../util/fetch");
+const { getFetch } = require("../util/fetch");
 
 const getDatabases = async (server, name, token) => {
     if (!server) {

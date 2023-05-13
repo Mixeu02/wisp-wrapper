@@ -1,4 +1,4 @@
-const { getFetch, postFetch, patchFetch } = require("../util/fetch");
+const { postFetch } = require("../util/fetch");
 
 const sendCommand = async (server, name, token, command) => {
     if (!command){
