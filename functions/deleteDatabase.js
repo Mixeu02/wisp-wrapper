@@ -1,11 +1,7 @@
 const { getFetch, postFetch, patchFetch } = require("../util/fetch");
 
-const getAuditLogs = async (server, name, token) => {
-    if (!server){
-        throw new Error("Server not defined.")
-    }
-
-    const auditLogsData = await getFetch(`https://${name}/api/client/servers/${server.uuid_short}/audit-logs`, token, true);
+const deleteDatabase = async (server, name, token, id) => {
+    const auditLogsData = await getFetch(`https://${name}/api/client/servers/${server.uuid_short}/databases/${id}`, token, true);
     return {
         logs: auditLogsData.data,
         quantity: auditLogsData.meta.pagination.total,
